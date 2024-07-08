@@ -14,6 +14,13 @@ const showRouter = require("./routes/showRoute");
 const bookingRouter = require("./routes/bookingRoute");
 
 const app = express();
+app.use(
+  cors({
+    origin: "*", // Allow all origins, you can restrict it to specific origins if needed
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 const clientBuildPath = path.join(__dirname, "../client/build");
 console.log(clientBuildPath);
 
@@ -26,13 +33,7 @@ app.use(helmet());
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
 app.use("/api/bookings/verify", express.raw({ type: "application/json" }));
 app.use(express.json());
-app.use(
-  cors({
-    origin: "*", // Allow all origins, you can restrict it to specific origins if needed
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+
 connectDB();
 
 // Rate limiter middleware
