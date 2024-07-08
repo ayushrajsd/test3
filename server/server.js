@@ -18,35 +18,18 @@ const app = express();
 // Enable CORS
 app.use(
   cors({
-    origin: "*", // Allow all origins, you can restrict it to specific origins if needed
+    origin: "https://test3-99k4.onrender.com", // Allow only your frontend origin
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Allow credentials such as cookies, authorization headers
   })
 );
 
-// Custom Helmet CSP configuration
-// app.use(
-//   helmet({
-//     contentSecurityPolicy: {
-//       directives: {
-//         defaultSrc: ["'self'"],
-//         scriptSrc: [
-//           "'self'",
-//           "'unsafe-inline'",
-//           "'unsafe-eval'",
-//           "https://test3-99k4.onrender.com",
-//         ],
-//         styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-//         imgSrc: ["'self'", "data:", "https://test3-99k4.onrender.com"],
-//         connectSrc: ["'self'", "https://test3-99k4.onrender.com"], // Your API domain
-//         fontSrc: ["'self'", "https://fonts.gstatic.com"],
-//         objectSrc: ["'none'"],
-//         upgradeInsecureRequests: [],
-//       },
-//     },
-//   })
-// );
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
+
+// Security middlewares
+app.use(helmet());
+app.use(mongoSanitize());
 
 // Parse request bodies as JSON
 app.use(express.json());
@@ -64,9 +47,6 @@ const apiLimiter = rateLimit({
 
 // Apply rate limiter to all API routes
 app.use("/api/", apiLimiter);
-
-// Sanitize user input to prevent MongoDB Operator Injection
-app.use(mongoSanitize());
 
 // Serve static files
 const clientBuildPath = path.join(__dirname, "../client/build");
