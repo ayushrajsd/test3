@@ -12,6 +12,14 @@ const showRouter = require("./routes/showRoute");
 const bookingRouter = require("./routes/bookingRoute");
 
 const app = express();
+const clientBuildPath = path.join(__dirname, "../client/build");
+console.log(clientBuildPath);
+
+app.use(express.static(clientBuildPath));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(clientBuildPath, "index.html"));
+});
+
 app.use(helmet());
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
 app.use("/api/bookings/verify", express.raw({ type: "application/json" }));
