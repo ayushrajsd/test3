@@ -4,6 +4,7 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const path = require("path");
+const cors = require("cors");
 
 const connectDB = require("./config/dbconfig");
 const userRouter = require("./routes/userRoute");
@@ -25,6 +26,13 @@ app.use(helmet());
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
 app.use("/api/bookings/verify", express.raw({ type: "application/json" }));
 app.use(express.json());
+app.use(
+  cors({
+    origin: "*", // Allow all origins, you can restrict it to specific origins if needed
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 connectDB();
 
 // Rate limiter middleware
@@ -51,6 +59,6 @@ app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-app.listen(8082, () => {
-  console.log("Server is running on port 8082");
+app.listen(8081, () => {
+  console.log("Server is running on port 8081");
 });
