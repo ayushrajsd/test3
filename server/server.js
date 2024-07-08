@@ -14,6 +14,8 @@ const showRouter = require("./routes/showRoute");
 const bookingRouter = require("./routes/bookingRoute");
 
 const app = express();
+
+// Enable CORS
 app.use(
   cors({
     origin: "*", // Allow all origins, you can restrict it to specific origins if needed
@@ -21,19 +23,16 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-const clientBuildPath = path.join(__dirname, "../client/build");
-console.log(clientBuildPath);
 
-app.use(express.static(clientBuildPath));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
-
+// Security middlewares
 app.use(helmet());
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
-app.use("/api/bookings/verify", express.raw({ type: "application/json" }));
-app.use(express.json());
 
+// Parse request bodies as JSON
+app.use(express.json());
+app.use("/api/bookings/verify", express.raw({ type: "application/json" }));
+
+// Connect to the database
 connectDB();
 
 // Rate limiter middleware
@@ -49,6 +48,14 @@ app.use("/api/", apiLimiter);
 // Sanitize user input to prevent MongoDB Operator Injection
 app.use(mongoSanitize());
 
+// Serve static files
+const clientBuildPath = path.join(__dirname, "../client/build");
+console.log(`Serving static files from: ${clientBuildPath}`);
+app.use(express.static(clientBuildPath));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(clientBuildPath, "index.html"));
+});
+
 /** Routes */
 app.use("/api/users", userRouter);
 app.use("/api/movies", movieRouter);
@@ -60,6 +67,13 @@ app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
 
-app.listen(8081, () => {
-  console.log("Server is running on port 8081");
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send("Something broke!");
+});
+
+const PORT = process.env.PORT || 8081;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
