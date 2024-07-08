@@ -28,7 +28,7 @@ app.use(
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
 
 // Security middlewares
-app.use(helmet());
+// app.use(helmet());
 app.use(mongoSanitize());
 
 // Parse request bodies as JSON
