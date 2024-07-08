@@ -3,6 +3,7 @@ require("dotenv").config(); // To access the environment variables
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
+const path = require("path");
 
 const connectDB = require("./config/dbconfig");
 const userRouter = require("./routes/userRoute");
