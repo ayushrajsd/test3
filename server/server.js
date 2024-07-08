@@ -24,8 +24,28 @@ app.use(
   })
 );
 
-// Security middlewares
-app.use(helmet());
+// Custom Helmet CSP configuration
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'",
+          "'unsafe-eval'",
+          "https://test3-99k4.onrender.com",
+        ],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+        imgSrc: ["'self'", "data:", "https://test3-99k4.onrender.com"],
+        connectSrc: ["'self'", "https://test3-99k4.onrender.com"], // Your API domain
+        fontSrc: ["'self'", "https://fonts.gstatic.com"],
+        objectSrc: ["'none'"],
+        upgradeInsecureRequests: [],
+      },
+    },
+  })
+);
 app.disable("x-powered-by"); // it will remove the x-powered-by header from the response
 
 // Parse request bodies as JSON
